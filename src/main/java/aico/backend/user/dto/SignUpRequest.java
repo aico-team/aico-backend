@@ -5,10 +5,8 @@ import aico.backend.global.annotation.PasswordFormatValid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class SignUpRequest {
     @EmailFormatValid
     @NotBlank(message = "사용자 이메일은 필수 항목입니다.")

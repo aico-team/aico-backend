@@ -12,4 +12,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface EmailFormatValid {
     String message() default "잘못된 이메일 형식입니다.";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }

@@ -1,5 +1,6 @@
 package aico.backend.user.domain;
 
+import aico.backend.user.dto.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,8 +33,11 @@ public class User {
         this.role = role;
     }
 
-    public static User createUser(String nickname, String email, String password, Role role) {
-        return new User(nickname, email, password, role);
+    public static User from(SignUpRequest request, String encodedPassword) {
+        return new User(request.getNickname(),
+                        request.getEmail(),
+                        encodedPassword,
+                        Role.USER);
     }
 
 }

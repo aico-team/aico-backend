@@ -1,5 +1,6 @@
 package aico.backend.global.exception;
 
+import aico.backend.global.exception.user.ConfirmPasswordMisException;
 import aico.backend.global.exception.user.DuplicatedUserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,5 +12,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicatedUserException.class)
     public ResponseEntity<?> handleDuplicatedUserException(DuplicatedUserException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ConfirmPasswordMisException.class)
+    public ResponseEntity<?> handleConfirmPasswordMisException(ConfirmPasswordMisException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
