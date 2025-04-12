@@ -26,6 +26,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column
+    private String refreshToken;
+
     private User(String nickname, String email, String password, Role role) {
         this.nickname = nickname;
         this.email = email;
@@ -38,6 +41,14 @@ public class User {
                         request.getEmail(),
                         encodedPassword,
                         Role.USER);
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void destroyRefreshToken() {
+        this.refreshToken = null;
     }
 
 }
