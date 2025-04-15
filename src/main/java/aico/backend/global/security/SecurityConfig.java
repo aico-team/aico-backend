@@ -1,9 +1,11 @@
 package aico.backend.global.security;
 
-import aico.backend.global.security.jwt.JwtUtil;
+import aico.backend.global.security.filter.JsonUsernamePasswordAuthenticationFilter;
+import aico.backend.global.security.filter.JwtAuthenticationFilter;
+import aico.backend.global.security.handler.LoginFailureHandler;
+import aico.backend.global.security.handler.LoginSuccessHandler;
 import aico.backend.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +37,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/signup", "api/user/login").permitAll()
+                        .requestMatchers("/api/user/signup", "/api/user/login").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -57,6 +59,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setHideUserNotFoundExceptions(false);
         return authProvider;
     }
 
@@ -68,19 +71,26 @@ public class SecurityConfig {
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
         JsonUsernamePasswordAuthenticationFilter filter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
+        filter.setFilterProcessesUrl("/api/user/login");
         filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         return filter;
     }
 
     @Bean
-    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler() {
-        return new LoginSuccessJWTProvideHandler(jwtUtil, userRepository);
+    public LoginSuccessHandler loginSuccessHandler() {
+        return new LoginSuccessHandler(jwtUtil);
     }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil, userRepository);
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler() {
+        return new LoginFailureHandler();
     }
 
 

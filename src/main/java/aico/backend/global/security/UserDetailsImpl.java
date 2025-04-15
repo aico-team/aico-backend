@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
@@ -29,6 +28,10 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getPassword() {
         return user.getPassword();
+    }
+
+    public String getNickname() {
+        return user.getNickname();
     }
 
     @Override
