@@ -29,4 +29,8 @@ public class UserService {
         User user = User.from(request,encodedPassword);
         userRepository.save(user);
     }
+
+    public boolean isDuplicatedEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
