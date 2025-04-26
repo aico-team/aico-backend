@@ -1,11 +1,12 @@
 package aico.backend.curriculum;
 
+import aico.backend.global.security.UserDetailsImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/curri")
@@ -13,8 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class CurriController {
     private final CurriService curriService;
 
-    @PostMapping()
-    public ResponseEntity<String> makeCurri(@RequestBody CurriDto.Request request) {
-        return curriService.chatGptService(request);
+    @GetMapping
+    public ResponseEntity<String> makeCurri(@RequestParam String topic, @RequestParam int stage) throws JsonProcessingException {
+        String curriculum = curriService.getGptCurriculum(topic, stage);
+        return ResponseEntity.ok(curriculum);
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<CurriDto.Response> confirmCurri(@RequestBody CurriDto.Request request,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CurriDto.Response curriculumMap = curriService.confirmCurriculum(request, userDetails);
+        return ResponseEntity.ok(curriculumMap);
     }
 }
