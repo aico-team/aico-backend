@@ -1,6 +1,7 @@
 package aico.backend.curriculum;
 
 import aico.backend.global.config.GptConfig;
+import aico.backend.global.security.SecurityConfig;
 import aico.backend.global.security.UserDetailsImpl;
 import aico.backend.user.domain.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class CurriService {
@@ -27,6 +29,7 @@ public class CurriService {
     private final ObjectMapper objectMapper;
     private final CurriRepository curriRepository;
     private static final String GPT_URL = "https://api.openai.com/v1/chat/completions";
+    private final SecurityConfig securityConfig;
 
 
     public String getGptCurriculum(String topic, int stage) throws JsonProcessingException {
@@ -90,6 +93,7 @@ public class CurriService {
         return prompt.toString();
     }
 
+    @Transactional
     public CurriDto.Response confirmCurriculum(CurriDto.Request request, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Map<String, CurriculumStep> curriculumMap = parseContentToMap(request.getContent());
@@ -102,5 +106,19 @@ public class CurriService {
 
         curriRepository.save(curriculum);
         return new CurriDto.Response(curriculumMap);
+    }
+
+    @Transactional
+    public void deleteCurriculum(Long id, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+
+        Curriculum curriculum = curriRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지않는 커리큘럼입니다."));
+
+        if (!curriculum.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
+        curriRepository.delete(curriculum);
     }
 }

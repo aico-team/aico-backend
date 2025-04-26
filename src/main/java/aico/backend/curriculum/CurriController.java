@@ -2,7 +2,6 @@ package aico.backend.curriculum;
 
 import aico.backend.global.security.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,5 +24,11 @@ public class CurriController {
                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CurriDto.Response curriculumMap = curriService.confirmCurriculum(request, userDetails);
         return ResponseEntity.ok(curriculumMap);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCurri(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        curriService.deleteCurriculum(id, userDetails);
+        return ResponseEntity.noContent().build();
     }
 }
