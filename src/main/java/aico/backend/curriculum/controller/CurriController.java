@@ -1,5 +1,7 @@
-package aico.backend.curriculum;
+package aico.backend.curriculum.controller;
 
+import aico.backend.curriculum.dto.CurriDto;
+import aico.backend.curriculum.service.CurriService;
 import aico.backend.global.security.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class CurriController {
 
     @PostMapping("/confirm")
     public ResponseEntity<CurriDto.Response> confirmCurri(@RequestBody CurriDto.Request request,
-                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CurriDto.Response curriculumMap = curriService.confirmCurriculum(request, userDetails);
         return ResponseEntity.ok(curriculumMap);
     }

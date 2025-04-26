@@ -1,4 +1,4 @@
-package aico.backend.curriculum;
+package aico.backend.curriculum.domain;
 
 import aico.backend.user.domain.User;
 import jakarta.persistence.*;

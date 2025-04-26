@@ -1,5 +1,9 @@
-package aico.backend.curriculum;
+package aico.backend.curriculum.service;
 
+import aico.backend.curriculum.dto.CurriDto;
+import aico.backend.curriculum.domain.Curriculum;
+import aico.backend.curriculum.domain.CurriculumStep;
+import aico.backend.curriculum.repository.CurriRepository;
 import aico.backend.global.config.GptConfig;
 import aico.backend.global.security.SecurityConfig;
 import aico.backend.global.security.UserDetailsImpl;

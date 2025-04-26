@@ -1,4 +1,4 @@
-package aico.backend.curriculum;
+package aico.backend.curriculum.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

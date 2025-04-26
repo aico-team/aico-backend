@@ -1,5 +1,6 @@
-package aico.backend.curriculum;
+package aico.backend.curriculum.dto;
 
+import aico.backend.curriculum.domain.CurriculumStep;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
