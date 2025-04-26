@@ -9,7 +9,7 @@ public class CurriDto {
     @Data
     public static class Request {
         @NotNull
-        private String subject;
+        private String topic;
 
         @NotNull
         @Min(value = 3, message = "커리큘럼은 최소 3단계입니다.")

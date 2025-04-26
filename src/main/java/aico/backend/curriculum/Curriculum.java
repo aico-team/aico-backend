@@ -10,6 +10,7 @@ public class Curriculum {
     @Column(nullable = false)
     private String curriculum;
 
-
+    @Column(nullable = false)
+    private String topic;
 
 }

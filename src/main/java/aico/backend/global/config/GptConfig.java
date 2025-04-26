@@ -5,15 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @Getter
 public class GptConfig {
-    @Value("${openai.secret-key")
+    @Value("${openai.secret-key}")
     private String secretKey;
 
-    @Value("${openai.model")
+    @Value("${openai.model}")
     private String model;
 
     @Bean
