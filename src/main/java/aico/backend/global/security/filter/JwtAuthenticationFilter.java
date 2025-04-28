@@ -25,8 +25,6 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();//5
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,13 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                      .filter(jwtUtil::isTokenValid)
                                      .orElse(null);
 
-        // 1. null 이 아니라면(RefreshToken valid) -> 액세스토큰 발급 후 바로 리턴(인증 처리 x)
         if(refreshToken != null) {
             reIssueAccessToken(response, refreshToken);
             return;
         }
 
-        // 2. RefreshToken not valid -> 액세스 토큰이 유효한지 확인 후, 회원을 찾아와 인증 처리
         checkAccessTokenAndAuthentication(request, response, filterChain);
     }
 
@@ -57,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("not valid access token");
         } else {
-            log.info("jwt 필터 호출됨");
             jwtUtil.extractEmail(accessToken.get())
                     .flatMap(userRepository::findByEmail)
                     .ifPresent(this::saveAuthentication);
@@ -70,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void saveAuthentication(User user) {
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
