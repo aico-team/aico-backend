@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/curri")
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class CurriController {
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CurriDto.Response curriculumMap = curriService.confirmCurriculum(request, userDetails);
         return ResponseEntity.ok(curriculumMap);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<CurriDto.Response>> getCurriList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<CurriDto.Response> curriList = curriService.getCurriList(userDetails);
+        return ResponseEntity.ok(curriList);
     }
 
     @DeleteMapping("/{id}")

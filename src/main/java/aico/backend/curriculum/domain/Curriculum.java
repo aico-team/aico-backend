@@ -26,12 +26,12 @@ public class Curriculum {
     private User user;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, CurriculumStep> curriculum;
+    private Map<String, CurriculumStep> curriculumMap;
 
     @Builder
-    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculum) {
+    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap) {
         this.topic = topic;
         this.user = user;
-        this.curriculum = curriculum;
+        this.curriculumMap = curriculumMap;
     }
 }

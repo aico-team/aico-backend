@@ -5,7 +5,7 @@ import aico.backend.curriculum.domain.Curriculum;
 import aico.backend.curriculum.domain.CurriculumStep;
 import aico.backend.curriculum.repository.CurriRepository;
 import aico.backend.global.config.GptConfig;
-import aico.backend.global.security.SecurityConfig;
+import aico.backend.global.exception.curriculum.CurriNotFoundException;
 import aico.backend.global.security.UserDetailsImpl;
 import aico.backend.user.domain.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ public class CurriService {
     private final ObjectMapper objectMapper;
     private final CurriRepository curriRepository;
     private static final String GPT_URL = "https://api.openai.com/v1/chat/completions";
-    private final SecurityConfig securityConfig;
 
 
     public String getGptCurriculum(String topic, int stage) throws JsonProcessingException {
@@ -105,11 +105,25 @@ public class CurriService {
         Curriculum curriculum = Curriculum.builder()
                 .topic(request.getTopic())
                 .user(user)
-                .curriculum(curriculumMap)
+                .curriculumMap(curriculumMap)
                 .build();
 
-        curriRepository.save(curriculum);
-        return new CurriDto.Response(curriculumMap);
+        Curriculum savedCurri = curriRepository.save(curriculum);
+        return new CurriDto.Response(savedCurri.getId(), savedCurri.getTopic(), curriculumMap);
+    }
+
+    public List<CurriDto.Response> getCurriList(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        List<Curriculum> curries = curriRepository.findByUser(user);
+        if(curries.isEmpty()) {
+            throw new CurriNotFoundException("해당 사용자의 커리큘럼이 없습니다.");
+        }
+        List<CurriDto.Response> response = new ArrayList<>();
+        for(Curriculum curri : curries) {
+            response.add(new CurriDto.Response(curri.getId(), curri.getTopic(), curri.getCurriculumMap()));
+        }
+
+        return response;
     }
 
     @Transactional
@@ -117,7 +131,7 @@ public class CurriService {
         User user = userDetails.getUser();
 
         Curriculum curriculum = curriRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지않는 커리큘럼입니다."));
+                .orElseThrow(() -> new CurriNotFoundException("존재하지않는 커리큘럼입니다."));
 
         if (!curriculum.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("삭제 권한이 없습니다.");

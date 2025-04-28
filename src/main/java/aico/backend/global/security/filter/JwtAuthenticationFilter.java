@@ -53,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("not valid access token");
         } else {
-            log.info("jwt 필터 호출됨");
             jwtUtil.extractEmail(accessToken.get())
                     .flatMap(userRepository::findByEmail)
                     .ifPresent(this::saveAuthentication);

@@ -1,5 +1,6 @@
 package aico.backend.global.exception;
 
+import aico.backend.global.exception.curriculum.CurriNotFoundException;
 import aico.backend.global.exception.user.ConfirmPasswordMisException;
 import aico.backend.global.exception.user.DuplicatedUserException;
 import org.springframework.http.HttpStatus;
@@ -17,5 +18,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConfirmPasswordMisException.class)
     public ResponseEntity<?> handleConfirmPasswordMisException(ConfirmPasswordMisException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(CurriNotFoundException.class)
+    public ResponseEntity<?> handleCurriNotFoundException(CurriNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
