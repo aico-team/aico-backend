@@ -23,8 +23,9 @@ public class CurriDto {
     @Data
     @AllArgsConstructor
     public static class Response {
-        @NotBlank
-        private Map<String, CurriculumStep> curriculum;
+        private Long id;
+        private String topic;
+        private Map<String, CurriculumStep> curriculumMap;
     }
 
 }
