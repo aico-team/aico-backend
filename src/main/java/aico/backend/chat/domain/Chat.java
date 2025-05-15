@@ -1,4 +1,4 @@
-package aico.backend.chat;
+package aico.backend.chat.domain;
 
 import aico.backend.user.domain.User;
 import jakarta.persistence.*;
