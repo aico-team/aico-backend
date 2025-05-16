@@ -15,6 +15,9 @@ public class GptConfig {
     @Value("${openai.model}")
     private String model;
 
+    @Value("${openai.uri}")
+    private String uri;
+
     @Bean
     public RestClient restClient() {
         return RestClient.create();
