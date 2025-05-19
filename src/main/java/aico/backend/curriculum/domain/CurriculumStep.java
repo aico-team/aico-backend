@@ -8,4 +8,5 @@ import lombok.Data;
 public class CurriculumStep {
     private String description;
     private boolean completed;
+    private String recommendation;
 }

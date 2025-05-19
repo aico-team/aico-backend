@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -28,10 +29,18 @@ public class Curriculum {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, CurriculumStep> curriculumMap;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> recommendations;
+
     @Builder
-    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap) {
+    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap, Map<String, String> recommendations) {
         this.topic = topic;
         this.user = user;
         this.curriculumMap = curriculumMap;
+        this.recommendations = recommendations;
+    }
+
+    public String getStepDescription(String step) {
+        return curriculumMap.get(step).getDescription();
     }
 }
