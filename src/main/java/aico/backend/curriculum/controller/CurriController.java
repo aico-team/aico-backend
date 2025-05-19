@@ -1,6 +1,7 @@
 package aico.backend.curriculum.controller;
 
 import aico.backend.curriculum.dto.CurriDto;
+import aico.backend.curriculum.dto.RecommendDto;
 import aico.backend.curriculum.service.CurriService;
 import aico.backend.global.security.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,5 +41,12 @@ public class CurriController {
     public ResponseEntity<Void> deleteCurri(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         curriService.deleteCurriculum(id, userDetails);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<String> recommendStudy(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                 @RequestBody RecommendDto.Request request) throws JsonProcessingException {
+        String recommendation = curriService.recommendStudy(userDetails, request);
+        return ResponseEntity.ok(recommendation);
     }
 }
