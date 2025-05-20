@@ -73,7 +73,7 @@ public class CurriService {
             String stage = split[0].trim();
             String description = split[1].trim();
 
-            curriculumMap.put(stage, new CurriculumStep(description, false, ""));
+            curriculumMap.put(stage, new CurriculumStep(description, false, null));
         }
 
         return curriculumMap;
@@ -97,7 +97,7 @@ public class CurriService {
         User user = userDetails.getUser();
         Map<String, CurriculumStep> curriculumMap = parseContentToMap(request.getContent());
 
-        Curriculum curriculum = new Curriculum(request.getTopic(), user, curriculumMap, new HashMap<>());
+        Curriculum curriculum = new Curriculum(request.getTopic(), user, curriculumMap);
 
         Curriculum savedCurri = curriRepository.save(curriculum);
         return new CurriDto.Response(savedCurri.getId(), savedCurri.getTopic(), curriculumMap);
@@ -131,16 +131,8 @@ public class CurriService {
         curriRepository.delete(curriculum);
     }
 
-    public String recommendStudy(UserDetailsImpl userDetails, RecommendDto.Request recommendDto) throws JsonProcessingException {
-        Curriculum curriculum = curriRepository.findById(recommendDto.getId())
-                .orElseThrow(() -> new CurriNotFoundException(""));
-
-        User user = userDetails.getUser();
-        if (!curriculum.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("이 커리큘럼에 접근할 수 없습니다.");
-        }
-
-        String stage = recommendDto.getStage();
+    @Transactional
+    public String recommendStudy(Curriculum curriculum, String stage) throws JsonProcessingException {
         String stageDescription = curriculum.getStepDescription(stage);
 
         String prompt = "다음 내용을 공부하기에 도움이 되는 웹사이트 링크와 제목을 3개 추천해줘." +
@@ -149,15 +141,37 @@ public class CurriService {
                 "조건: 1. 각 추천은 웹사이트 제목과 링크로 구성된다. " +
                 "2. [제목] - 링크 주소 형식으로만 대답하라." +
                 "3. 다른 추천 사이에는 빈 줄로 구분하라." +
-                "4. 제목, 링크만 말하라.";
+                "4. 제목, 링크만 말하라." +
+                "5. 실제 내용이 있는, 404가 아닌 페이지만을 추천하라. 한국어 페이지 선호.";
 
         List<ChatMessage> message = new ArrayList<>();
         message.add(new ChatMessage("user", prompt));
         String response = sendApiRequest(message);
 
-        curriculum.getRecommendations().put(stage, response);
+        curriculum.changeRecommendation(stage, response);
         curriRepository.save(curriculum);
 
         return response;
+    }
+
+    @Transactional
+    public String getRecommendation(UserDetailsImpl userDetails, RecommendDto.Request recommendDto) throws JsonProcessingException {
+        String stage = recommendDto.getStage();
+
+        Curriculum curriculum = curriRepository.findById(recommendDto.getId())
+                .orElseThrow(() -> new CurriNotFoundException("해당 커리큘럼이 없습니다."));
+
+        User user = userDetails.getUser();
+        if (!curriculum.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("이 커리큘럼에 접근할 수 없습니다.");
+        }
+
+        String recommendation = curriculum.getRecommendation(stage);
+
+        if(recommendation == null) {
+            recommendation = recommendStudy(curriculum, stage);
+        }
+
+        return recommendation;
     }
 }

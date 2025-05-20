@@ -43,10 +43,10 @@ public class CurriController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/recommend")
+    @PostMapping("/recommend")
     public ResponseEntity<String> recommendStudy(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                  @RequestBody RecommendDto.Request request) throws JsonProcessingException {
-        String recommendation = curriService.recommendStudy(userDetails, request);
+        String recommendation = curriService.getRecommendation(userDetails, request);
         return ResponseEntity.ok(recommendation);
     }
 }
