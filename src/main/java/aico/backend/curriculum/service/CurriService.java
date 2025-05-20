@@ -1,5 +1,6 @@
 package aico.backend.curriculum.service;
 
+import aico.backend.curriculum.dto.CompletionDto;
 import aico.backend.curriculum.dto.CurriDto;
 import aico.backend.curriculum.domain.Curriculum;
 import aico.backend.curriculum.domain.CurriculumStep;
@@ -67,7 +68,7 @@ public class CurriService {
             String stage = split[0].trim();
             String description = split[1].trim();
 
-            curriculumMap.put(stage, new CurriculumStep(description, false));
+            curriculumMap.put(stage, new CurriculumStep(description, false, null));
         }
 
         return curriculumMap;
@@ -106,6 +107,7 @@ public class CurriService {
                 .topic(request.getTopic())
                 .user(user)
                 .curriculumMap(curriculumMap)
+                .progress(0.0)
                 .build();
 
         Curriculum savedCurri = curriRepository.save(curriculum);
@@ -139,4 +141,35 @@ public class CurriService {
 
         curriRepository.delete(curriculum);
     }
+
+    @Transactional
+    public Double changeCompletion(CompletionDto request, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        Curriculum curriculum = curriRepository.findById(request.getId()).orElseThrow(
+                () -> new CurriNotFoundException("해당 커리큘럼이 없습니다.")
+        );
+
+        if (!curriculum.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("해당 커리큘럼에 접근 권한이 없습니다.");
+        }
+
+        curriculum.changeCompletion(request.getStage(), request.getCompleted());
+        int completedStages = curriRepository.countCompletedStagesById(request.getId());
+        double percent = (double) completedStages / curriculum.getCurriculumMap().size();
+        return curriculum.changeProgress(Math.round(percent * 1000) / 10.0);
+    }
+
+    public Double getProgress(Long id, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        Curriculum curriculum = curriRepository.findById(id).orElseThrow(
+                () -> new CurriNotFoundException("해당 커리큘럼이 없습니다.")
+        );
+
+        if (!curriculum.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("해당 커리큘럼에 접근 권한이 없습니다.");
+        }
+
+        return curriculum.getProgress();
+    }
+
 }
