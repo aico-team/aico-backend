@@ -11,18 +11,41 @@ public class StudyTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    @Column(nullable = false)
+    private Long userId;
 
+    @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false)
     private int studySeconds;
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
-    public int getStudySeconds() { return studySeconds; }
-    public void setStudySeconds(int studySeconds) { this.studySeconds = studySeconds; }
+    public Long getId() {
+        return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public int getStudySeconds() {
+        return studySeconds;
+    }
+
+    public void setStudySeconds(int studySeconds) {
+        this.studySeconds = studySeconds;
+    }
 }

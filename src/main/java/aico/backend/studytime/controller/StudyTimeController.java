@@ -20,26 +20,33 @@ public class StudyTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveTime(@RequestParam String userId, @RequestParam int totalSeconds) {
+    public ResponseEntity<Void> saveTime(@RequestParam Long userId, @RequestParam int totalSeconds) {
         service.saveStudyTime(userId, totalSeconds);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/today")
-    public ResponseEntity<Integer> getToday(@RequestParam String userId) {
+    public ResponseEntity<Integer> getToday(@RequestParam Long userId) {
         return ResponseEntity.ok(service.getTodayStudyTime(userId));
     }
 
     @GetMapping("/streak")
-    public ResponseEntity<Integer> getStreak(@RequestParam String userId) {
+    public ResponseEntity<Integer> getStreak(@RequestParam Long userId) {
         return ResponseEntity.ok(service.getStreak(userId));
     }
 
     @GetMapping("/daily")
     public ResponseEntity<List<StudyTime>> getDaily(
-            @RequestParam String userId,
+            @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-        return ResponseEntity.ok(service.getDaily(userId, start, end));
+        return ResponseEntity.ok(service.getDailyTimes(userId, start, end));
+    }
+
+    @GetMapping("/weekly")
+    public ResponseEntity<List<StudyTime>> getWeekly(
+            @RequestParam Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(service.getWeeklyTimes(userId, date));
     }
 }

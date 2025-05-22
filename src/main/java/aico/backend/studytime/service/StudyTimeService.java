@@ -5,6 +5,7 @@ import aico.backend.studytime.repository.StudyTimeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.DayOfWeek;
 import java.util.List;
 
 @Service
@@ -15,7 +16,7 @@ public class StudyTimeService {
         this.repo = repo;
     }
 
-    public void saveStudyTime(String userId, int totalSeconds) {
+    public void saveStudyTime(Long userId, int totalSeconds) {
         LocalDate today = LocalDate.now();
         StudyTime record = repo.findByUserIdAndDate(userId, today)
                 .orElse(new StudyTime());
@@ -27,28 +28,35 @@ public class StudyTimeService {
         repo.save(record);
     }
 
-    public int getTodayStudyTime(String userId) {
+    public int getTodayStudyTime(Long userId) {
         return repo.findByUserIdAndDate(userId, LocalDate.now())
                 .map(StudyTime::getStudySeconds)
                 .orElse(0);
     }
 
-    public int getStreak(String userId) {
-        List<StudyTime> records = repo.findByUserIdOrderByDateDesc(userId);
-        int streak = 0;
-        LocalDate today = LocalDate.now();
+    public int getStreak(Long userId) {
+        List<StudyTime> records = repo.findByUserIdAndDateBeforeOrderByDateDesc(userId, LocalDate.now().plusDays(1));
 
-        for (StudyTime r : records) {
-            if (!r.getDate().equals(today)) break;
-            if (r.getStudySeconds() < 1800) break;
+        int streak = 0;
+        LocalDate date = LocalDate.now();
+
+        for (StudyTime record : records) {
+            if (!record.getDate().equals(date)) break;
+            if (record.getStudySeconds() < 1800) break;
             streak++;
-            today = today.minusDays(1);
+            date = date.minusDays(1);
         }
 
         return streak;
     }
 
-    public List<StudyTime> getDaily(String userId, LocalDate start, LocalDate end) {
+    public List<StudyTime> getDailyTimes(Long userId, LocalDate start, LocalDate end) {
         return repo.findByUserIdAndDateBetween(userId, start, end);
+    }
+
+    public List<StudyTime> getWeeklyTimes(Long userId, LocalDate date) {
+        LocalDate monday = date.with(DayOfWeek.MONDAY);
+        LocalDate sunday = monday.plusDays(6);
+        return repo.findByUserIdAndDateBetween(userId, monday, sunday);
     }
 }

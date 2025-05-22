@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudyTimeRepository extends JpaRepository<StudyTime, Long> {
-    Optional<StudyTime> findByUserIdAndDate(String userId, LocalDate date);
-    List<StudyTime> findByUserIdAndDateBetween(String userId, LocalDate start, LocalDate end);
-    List<StudyTime> findByUserIdOrderByDateDesc(String userId);
+    Optional<StudyTime> findByUserIdAndDate(Long userId, LocalDate date);
+
+    List<StudyTime> findByUserIdAndDateBetween(Long userId, LocalDate start, LocalDate end);
+
+    List<StudyTime> findByUserIdAndDateBeforeOrderByDateDesc(Long userId, LocalDate today);
 }
