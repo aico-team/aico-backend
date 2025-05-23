@@ -1,10 +1,12 @@
 package aico.backend.curriculum.controller;
 
+import aico.backend.curriculum.dto.CompletionDto;
 import aico.backend.curriculum.dto.CurriDto;
 import aico.backend.curriculum.service.CurriService;
 import aico.backend.global.security.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/curri")
 @RequiredArgsConstructor
+@Slf4j
 public class CurriController {
     private final CurriService curriService;
 
@@ -41,4 +44,20 @@ public class CurriController {
         curriService.deleteCurriculum(id, userDetails);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/complete")
+    public ResponseEntity<Double> changeCompletion(@RequestBody CompletionDto request,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Double percent = curriService.changeCompletion(request, userDetails);
+        return ResponseEntity.ok(percent);
+    }
+
+    @GetMapping("/complete/{id}")
+    public ResponseEntity<Double> changeCompletion(@PathVariable Long id,
+                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Double percent = curriService.getProgress(id, userDetails);
+        return ResponseEntity.ok(percent);
+    }
+
+
 }

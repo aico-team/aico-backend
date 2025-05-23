@@ -14,6 +14,7 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(schema = "aico")
 public class Curriculum {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,10 +29,34 @@ public class Curriculum {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, CurriculumStep> curriculumMap;
 
+    private Double progress;
+
     @Builder
-    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap) {
+    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap, Double progress) {
         this.topic = topic;
         this.user = user;
         this.curriculumMap = curriculumMap;
+        this.progress = progress;
+    }
+
+    public String getStepDescription(String step) {
+        return this.curriculumMap.get(step).getDescription();
+    }
+
+    public String getRecommendation(String step) {
+        return this.curriculumMap.get(step).getRecommendation();
+    }
+
+    public void changeRecommendation(String step, String description) {
+        this.curriculumMap.get(step).setRecommendation(description);
+    }
+
+    public void changeCompletion(String step, Boolean completed) {
+        this.curriculumMap.get(step).setCompleted(completed);
+    }
+
+    public Double changeProgress(Double progress) {
+        this.progress = progress;
+        return this.progress;
     }
 }

@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class CurriculumStep {
     private String description;
-    private boolean completed;
+    private Boolean completed;
+    private String recommendation;
 }
