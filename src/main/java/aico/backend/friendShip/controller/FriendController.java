@@ -23,4 +23,9 @@ public class FriendController {
         return ResponseEntity.ok("요청 발신 완료");
     }
 
+    @GetMapping
+    public ResponseEntity<List<FriendDto>> getRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<FriendDto> waitingRequests = friendService.getWaitingFriendRequests(userDetails);
+        return ResponseEntity.ok(waitingRequests);
+    }
 }
