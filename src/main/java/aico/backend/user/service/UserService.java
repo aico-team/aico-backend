@@ -19,8 +19,11 @@ public class UserService {
 
     @Transactional
     public void signUp(SignUpRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (isDuplicatedEmail(request.getEmail())) {
             throw new DuplicatedUserException("이미 가입된 이메일입니다.");
+        }
+        if (isDuplicatedNickname(request.getNickname())) {
+            throw new DuplicatedUserException("이미 존재하는 닉네임입니다.");
         }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new ConfirmPasswordMisException("비밀번호와 비밀번호 확인값이 다릅니다.");
@@ -32,5 +35,9 @@ public class UserService {
 
     public boolean isDuplicatedEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public boolean isDuplicatedNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }
