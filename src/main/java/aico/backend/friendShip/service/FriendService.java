@@ -6,6 +6,8 @@ import aico.backend.friendShip.domain.FriendShip;
 import aico.backend.friendShip.domain.FriendShipStatus;
 import aico.backend.friendShip.repository.FriendShipRepository;
 import aico.backend.global.exception.friendShip.AlreadyExistsException;
+import aico.backend.global.exception.friendShip.FriendShipNotFoundException;
+import aico.backend.global.exception.user.AccessDeniedException;
 import aico.backend.global.exception.user.UserNotFoundException;
 import aico.backend.global.security.UserDetailsImpl;
 import aico.backend.user.domain.User;
@@ -34,13 +36,13 @@ public class FriendService {
     @Transactional
     public void sendFriendRequest(String toNickName, UserDetailsImpl userDetails) {
         // 발신 유저
-        User fromUser = userService.getCurrentUser(userDetails).
-                orElseThrow(() -> new UserNotFoundException(userDetails.getNickname() + " 이/가 존재하지 않습니다."));
+        User fromUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserNotFoundException("User ID: " + userDetails.getId() + " not found"));
         String fromNickName = fromUser.getNickname();
 
         // 수신 유저
         User toUser = userRepository.findByNickname(toNickName)
-                .orElseThrow(() -> new UserNotFoundException("해당 사용자가 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("User NickName: " + toNickName + " not found"));
 
         if (friendShipRepository.existsByUserAndFriendUserId(fromUser, toUser.getId())) {
             throw new AlreadyExistsException("이미 존재하는 친구 또는 요청입니다.");
@@ -91,12 +93,17 @@ public class FriendService {
 
     // 친구 요청 수락
     @Transactional
-    public String acceptWaitingRequest(Long friendShipId) {
-        FriendShip myFriendShip = friendShipRepository.findById(friendShipId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지않는 요청입니다."));
+    public String acceptWaitingRequest(Long friendShipId, UserDetailsImpl userDetails) {
+        FriendShip myFriendShip = friendShipRepository.findWithUserById(friendShipId)
+                .orElseThrow(() -> new FriendShipNotFoundException("존재하지않는 요청입니다. ID: " + friendShipId));
+
+        User me = myFriendShip.getUser();
+        if (!me.equals(userDetails.getUser()) || !myFriendShip.isRequested()){
+            throw new AccessDeniedException("수락 권한이 없습니다.");
+        }
 
         FriendShip counterFriendShip = friendShipRepository.findById(myFriendShip.getCounterId())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지않는 요청입니다."));
+                .orElseThrow(() -> new FriendShipNotFoundException("존재하지않는 요청입니다. ID: " + myFriendShip.getCounterId()));
 
         myFriendShip.acceptRequest();
         counterFriendShip.acceptRequest();
@@ -104,15 +111,20 @@ public class FriendService {
         return "수락 완료";
     }
 
+    // 친구 삭제 및 요청 거절
     @Transactional
-    public String rejectWaitingRequest(Long friendShipId) {
+    public String deleteOrReject(Long friendShipId, UserDetailsImpl userDetails) {
         FriendShip myFriendShip = friendShipRepository.findById(friendShipId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지않는 요청입니다."));
+                .orElseThrow(() -> new FriendShipNotFoundException("친구 관계 ID: " + friendShipId + " 존재 하지않음"));
 
-        Long friendUserId = myFriendShip.getFriendUserId();
+        if (!myFriendShip.getUser().equals(userDetails.getUser())){
+            throw new AccessDeniedException("거절 권한이 없습니다.");
+        }
+
+        Long counterId = myFriendShip.getCounterId();
 
         friendShipRepository.deleteById(friendShipId);
-        friendShipRepository.deleteByFriendUserId(friendUserId);
+        friendShipRepository.deleteById(counterId);
 
         return "거절 완료";
     }

@@ -43,9 +43,4 @@ public class UserService {
     public boolean isDuplicatedNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
-
-    public Optional<User> getCurrentUser(UserDetailsImpl userDetails) {
-        Long id = userDetails.getUser().getId();
-        return userRepository.findById(id);
-    }
 }

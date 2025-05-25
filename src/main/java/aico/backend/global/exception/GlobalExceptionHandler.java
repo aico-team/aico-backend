@@ -2,6 +2,8 @@ package aico.backend.global.exception;
 
 import aico.backend.global.exception.curriculum.CurriNotFoundException;
 import aico.backend.global.exception.friendShip.AlreadyExistsException;
+import aico.backend.global.exception.friendShip.FriendShipNotFoundException;
+import aico.backend.global.exception.user.AccessDeniedException;
 import aico.backend.global.exception.user.ConfirmPasswordMisException;
 import aico.backend.global.exception.user.DuplicatedUserException;
 import aico.backend.global.exception.user.UserNotFoundException;
@@ -10,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.rmi.AlreadyBoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -38,4 +39,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAlreadyExistsException(AlreadyExistsException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
+    @ExceptionHandler(FriendShipNotFoundException.class)
+    public ResponseEntity<?> handleFriendShipNotFoundException(FriendShipNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
 }
