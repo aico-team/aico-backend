@@ -1,6 +1,7 @@
 package aico.backend.global.exception;
 
 import aico.backend.global.exception.curriculum.CurriNotFoundException;
+import aico.backend.global.exception.friendShip.AlreadyExistsException;
 import aico.backend.global.exception.user.ConfirmPasswordMisException;
 import aico.backend.global.exception.user.DuplicatedUserException;
 import aico.backend.global.exception.user.UserNotFoundException;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.rmi.AlreadyBoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,5 +32,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<?> handleAlreadyExistsException(AlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

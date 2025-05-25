@@ -2,6 +2,7 @@ package aico.backend.user.service;
 
 import aico.backend.global.exception.user.ConfirmPasswordMisException;
 import aico.backend.global.exception.user.DuplicatedUserException;
+import aico.backend.global.security.UserDetailsImpl;
 import aico.backend.user.domain.Role;
 import aico.backend.user.domain.User;
 import aico.backend.user.dto.SignUpRequest;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -39,5 +42,10 @@ public class UserService {
 
     public boolean isDuplicatedNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
+    }
+
+    public Optional<User> getCurrentUser(UserDetailsImpl userDetails) {
+        Long id = userDetails.getUser().getId();
+        return userRepository.findById(id);
     }
 }

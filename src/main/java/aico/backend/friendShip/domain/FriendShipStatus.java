@@ -1,5 +1,5 @@
 package aico.backend.friendShip.domain;
 
-public enum FriendStatus {
-    WAITING, 
+public enum FriendShipStatus {
+    WAITING, ACCEPTED
 }
