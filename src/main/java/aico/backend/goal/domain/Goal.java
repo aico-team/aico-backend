@@ -22,18 +22,15 @@ public class Goal {
     private Long goalId;
 
     //완료 상태를 나타내는 boolean 변수
-    @Setter
     @Column(nullable = false)
     @Builder.Default
     private boolean completed  = false; //기본값은 false로, 목표가 완료되지않았다는 것을 의미
 
     //목표 이름
-    @Setter //이름 변경 가능하도록 함
     @Column(nullable = false)
     private String goalName;
 
     //목표 마감일
-    @Setter //마감일 변경 가능하도록 함
     private LocalDate deadline;
 
     //User과의 관계 (N:1)
@@ -43,21 +40,24 @@ public class Goal {
     private User user;
 
     //Curriculum과의 관계 (N:1, null도 가능)
-    @Setter //커리큘럼 연결 변경이 가능하도록 함
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curriculum_id") //외래 키 컬럼 이름 지정
     private Curriculum curriculum;
 
 
     //Goal 수정 메소드
-    public void updateGoal(String newGoalName, LocalDate newDeadline, Curriculum newCurriculum) {
-        if (newGoalName != null) {
-            this.goalName = newGoalName;
-        }if (newDeadline != null) {
-            this.deadline = newDeadline;
-        }if (newCurriculum != null) {
-            this.curriculum = newCurriculum;
-        }
+    public void updateGoal(String newGoalName, LocalDate newDeadline, Curriculum newCurriculum, boolean newCompletedStatus) {
+        //DTO에서 @NotBlank 으로 검증 됐다고 가정
+        this.goalName = newGoalName;
+
+        this.deadline = newDeadline;
+        this.curriculum = newCurriculum;
+
+        this.completed = newCompletedStatus;
+    }
+
+    public void toggleCompletion() {
+        this.completed = !this.completed;
     }
     
     //Goal과 Curriculum간의 관계를 없애는 메서드: Goal의 관계 Curriculum을 없애고 싶을 때 사용

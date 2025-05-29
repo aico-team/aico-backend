@@ -97,11 +97,6 @@ public class GoalService {
         }
 
         //3. DTO의 값으로 엔티티 필드 없데이트 (전체 업데이트)
-
-        goal.setGoalName(requestDto.getGoalName());
-
-        goal.setDeadline(requestDto.getDeadline());
-
         Curriculum newCurriculum = null;
 
         Long curriculumIdFromDto = requestDto.getCurrId();
@@ -114,7 +109,12 @@ public class GoalService {
                         .orElseThrow(() -> new EntityNotFoundException("연결할 커리큘럼을 찾을 수 없습니다. ID: " + curriculumIdFromDto));
             }
         }
-        goal.setCurriculum(newCurriculum);
+        goal.updateGoal(
+                requestDto.getGoalName(),
+                requestDto.getDeadline(),
+                newCurriculum,
+                requestDto.isCompleted()
+        );
 
         //4. @Transactional에 의해 변경된 엔티티는 트랜잭션 커밋 시점에 DB에 반영
 
@@ -149,7 +149,7 @@ public class GoalService {
         }
 
         //3. 완료 상태 토글
-        goal.setCompleted(!goal.isCompleted());
+        goal.toggleCompletion();
 
         //4. 변경된 Goal 엔티티는 @Transactional에 의해 DB에 반영.
 

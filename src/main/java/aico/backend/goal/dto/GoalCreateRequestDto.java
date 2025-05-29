@@ -2,17 +2,16 @@ package aico.backend.goal.dto;
 
 //새로운 목표를 생성할 때 필요한 정보 (userId는 JWT 토큰을 통해 서버에서 직접)
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class GoalCreateRequestDto {
 
@@ -21,6 +20,7 @@ public class GoalCreateRequestDto {
     private String goalName;
 
     @FutureOrPresent(message = "마감일은 과거가 될 수 없습니다.")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate deadline;
 
     private Long currId;
