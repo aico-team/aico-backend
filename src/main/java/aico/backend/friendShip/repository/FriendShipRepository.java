@@ -36,4 +36,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
        WHERE f.id = :id
         """)
     void deleteById(@Param("id") Long id);
+
+    List<FriendShip> findByUser(User user);
 }

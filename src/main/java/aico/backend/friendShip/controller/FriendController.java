@@ -25,7 +25,7 @@ public class FriendController {
     }
 
     // 대기 중인 수신한 요청 조회
-    @GetMapping
+    @GetMapping("/request")
     public ResponseEntity<List<FriendDto>> getRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<FriendDto> waitingRequests = friendService.getWaitingFriendRequests(userDetails);
         return ResponseEntity.ok(waitingRequests);
@@ -45,5 +45,12 @@ public class FriendController {
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String response = friendService.deleteOrReject(id, userDetails);
         return ResponseEntity.ok(response);
+    }
+
+    // 내 친구 조회
+    @GetMapping("/list")
+    public ResponseEntity<List<FriendDto>> myFriends(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<FriendDto> myFriends = friendService.getMyFriends(userDetails);
+        return ResponseEntity.ok(myFriends);
     }
 }

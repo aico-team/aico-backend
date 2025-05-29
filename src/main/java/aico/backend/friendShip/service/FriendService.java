@@ -129,4 +129,19 @@ public class FriendService {
         return "거절 완료";
     }
 
+    public List<FriendDto> getMyFriends(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        List<FriendShip> myFriends = friendShipRepository.findByUser(user);
+        List<FriendDto> friendDtos = new ArrayList<>();
+
+        for (FriendShip friend : myFriends) {
+            Long friendShipId = friend.getId();
+            Long friendUserId = friend.getFriendUserId();
+            String friendNickname = friend.getFriendNickname();
+            friendDtos.add(new FriendDto(friendShipId, friendUserId, friendNickname));
+        }
+
+        return friendDtos;
+    }
+
 }
