@@ -117,9 +117,6 @@ public class CurriService {
     public List<CurriDto.Response> getCurriList(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         List<Curriculum> curries = curriRepository.findByUser(user);
-        if(curries.isEmpty()) {
-            throw new CurriNotFoundException("해당 사용자의 커리큘럼이 없습니다.");
-        }
         List<CurriDto.Response> response = new ArrayList<>();
         for(Curriculum curri : curries) {
             response.add(new CurriDto.Response(curri.getId(), curri.getTopic(), curri.getCurriculumMap()));
