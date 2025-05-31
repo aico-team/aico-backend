@@ -2,6 +2,7 @@ package aico.backend.goal.service;
 
 import aico.backend.curriculum.domain.Curriculum;
 import aico.backend.curriculum.repository.CurriRepository;
+import aico.backend.global.security.UserDetailsImpl;
 import aico.backend.goal.domain.Goal;
 import aico.backend.goal.dto.GoalCreateRequestDto;
 import aico.backend.goal.dto.GoalResponseDto;
@@ -27,9 +28,8 @@ public class GoalService {
     private final CurriRepository curriRepository;
 
     @Transactional
-    public GoalResponseDto createGoal(GoalCreateRequestDto requestDto, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("요청하신 사용자를 찾을 수 없습니다. ID: " + userId));
+    public GoalResponseDto createGoal(GoalCreateRequestDto requestDto, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
 
         Curriculum curriculum = null;
         if (requestDto.getCurrId() != null) {
@@ -53,13 +53,13 @@ public class GoalService {
 
     //goalId로 goal찾기
     @Transactional (readOnly = true)
-    public GoalResponseDto getGoalById(Long goalId, Long userId) {
+    public GoalResponseDto getGoalById(Long goalId, UserDetailsImpl userDetails) {
         //1. 목표 조회
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new EntityNotFoundException("목표를 찾을 수 없습니다. ID: " + goalId));
 
         //2. 목표 소유자 확인 (권한 검사)
-        if (!goal.getUser().getId().equals(userId)) {
+        if (!goal.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new SecurityException("해당 목표에 접근할 권한이 없습니다.");
         }
 
@@ -69,10 +69,10 @@ public class GoalService {
 
     //사용자의 모든 목표 조회
     @Transactional (readOnly = true) //test를 편하게..
-    public List<GoalResponseDto> getAllGoalsForUser(Long userId) {
+    public List<GoalResponseDto> getAllGoalsForUser(UserDetailsImpl userDetails) {
         //1. 사용자 엔티티 조회 (해당 사용자가 존재하는지 확인)
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
+        User user = userRepository.findById(userDetails.getUser().getId())
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userDetails.getUser().getId()));
 
         //2. 해당 사용자의 모든 목표 조회
         List<Goal> goals = goalRepository.findByUser(user);
@@ -85,13 +85,13 @@ public class GoalService {
     }
 
     @Transactional
-    public GoalResponseDto updateGoal(Long goalId, GoalUpdateRequestDto requestDto, Long userId) {
+    public GoalResponseDto updateGoal(Long goalId, GoalUpdateRequestDto requestDto, UserDetailsImpl userDetails) {
         //1. 목표 조회
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new EntityNotFoundException("수정할 목표를 찾을 수 없습니다. ID: " + goalId));
 
         //2. 목표 소유자 확인 (권한 검사)
-        if (!goal.getUser().getId().equals(userId)) {
+        if (!goal.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new SecurityException("해당 목표를 수정할 권한이 없습니다.");
 
         }
@@ -123,13 +123,13 @@ public class GoalService {
     }
 
     @Transactional
-    public void deleteGoal(Long goalId, Long userId) {
+    public void deleteGoal(Long goalId, UserDetailsImpl userDetails) {
         //1. 목표 조회
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new EntityNotFoundException("삭제할 목표를 찾을 수 없습니다. ID: " + goalId));
 
         //2. 목표 소유자 확인 (권한 검사)
-        if (!goal.getUser().getId().equals(userId)) {
+        if (!goal.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new SecurityException("해당 목표를 삭제할 권한이 없습니다.");
         }
 
@@ -138,13 +138,13 @@ public class GoalService {
     }
 
     @Transactional
-    public GoalResponseDto toggleGoalCompletionStatus(Long goalId, Long userId) {
+    public GoalResponseDto toggleGoalCompletionStatus(Long goalId, UserDetailsImpl userDetails) {
         //1. 목표 조회
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new EntityNotFoundException("상태를 변경할 목표를 찾을 수 없습니다. ID: " + goalId));
 
         //2. 목표 소유자 확인 (권한 검사)
-        if (!goal.getUser().getId().equals(userId)) {
+        if (!goal.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new SecurityException("해당 목표의 상태를 변경할 권한이 없습니다.");
         }
 
