@@ -8,17 +8,16 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "goals") //데이터베이스 테이블 이름을 goals로 지정
+@Table(name = "goals")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //User.java와 유사하게 기본 생성자 접근 레벨 설정
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
 public class Goal {
 
-    //기본키(PK)로 사용할 필드. DB에서는 이 값을 기준으로 각 데이터를 구분
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //DB에서 자동으로 번호 증가
-    @Column(name = "goal_id") //데이터베이스 column명 goal_id로 지정
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "goal_id")
     private Long goalId;
 
     //완료 상태를 나타내는 boolean 변수
@@ -33,15 +32,13 @@ public class Goal {
     //목표 마감일
     private LocalDate deadline;
 
-    //User과의 관계 (N:1)
-    //한 명의 User는 여러 Goal을 가질 수 있다. Goal은 반드시 한 명의 User에게 속한다.
-    @ManyToOne(fetch = FetchType.LAZY) //LAZY: Goal을 조회할 때 User정보를 바로 읽지 않음 (성능 최적화)
-    @JoinColumn(name = "user_id", nullable = false) //외래 키 컬럼 이름 지정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     //Curriculum과의 관계 (N:1, null도 가능)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "curriculum_id") //외래 키 컬럼 이름 지정
+    @JoinColumn(name = "curriculum_id")
     private Curriculum curriculum;
 
 
