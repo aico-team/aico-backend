@@ -31,6 +31,9 @@ public class Curriculum {
 
     private Double progress;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> recommendations;
+
     @Builder
     public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap, Double progress) {
         this.topic = topic;
@@ -43,14 +46,6 @@ public class Curriculum {
         return this.curriculumMap.get(step).getDescription();
     }
 
-    public String getRecommendation(String step) {
-        return this.curriculumMap.get(step).getRecommendation();
-    }
-
-    public void changeRecommendation(String step, String description) {
-        this.curriculumMap.get(step).setRecommendation(description);
-    }
-
     public void changeCompletion(String step, Boolean completed) {
         this.curriculumMap.get(step).setCompleted(completed);
     }
@@ -59,4 +54,9 @@ public class Curriculum {
         this.progress = progress;
         return this.progress;
     }
+
+    public void changeRecommend(String step, String value) {
+        this.recommendations.put(step, value);
+    }
+
 }

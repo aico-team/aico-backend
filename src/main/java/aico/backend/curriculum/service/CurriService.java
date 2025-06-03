@@ -4,6 +4,7 @@ import aico.backend.curriculum.dto.CompletionDto;
 import aico.backend.curriculum.dto.CurriDto;
 import aico.backend.curriculum.domain.Curriculum;
 import aico.backend.curriculum.domain.CurriculumStep;
+import aico.backend.curriculum.dto.RecommendDto;
 import aico.backend.curriculum.repository.CurriRepository;
 import aico.backend.global.config.GptConfig;
 import aico.backend.global.exception.curriculum.CurriNotFoundException;
@@ -167,6 +168,77 @@ public class CurriService {
         }
 
         return curriculum.getProgress();
+    }
+
+    @Transactional
+    public String recommendStudy(UserDetailsImpl userDetails, RecommendDto recommendDto) throws JsonProcessingException {
+        Curriculum curriculum = curriRepository.findById(recommendDto.getId())
+                .orElseThrow(() -> new CurriNotFoundException(""));
+
+        User user = userDetails.getUser();
+        if (!curriculum.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
+        String stage = recommendDto.getStage();
+        String value = curriculum.getRecommendations().get(stage);
+
+        if (value != null) {
+            return value;
+        }
+
+        String stageDescription = curriculum.getStepDescription(stage);
+
+        String prompt = "다음 내용을 공부하기에 도움이 되는 웹사이트 링크와 제목을 3개 추천해줘." +
+                "내용: " +
+                stageDescription +
+                "조건: 1. 각 추천은 웹사이트 제목과 링크로 구성된다. " +
+                "2. [제목] - 링크 주소만 대답하라. 다른 말 하지마." +
+                "3. 다른 추천 사이에는 빈 줄로 구분하라." +
+                "4. 실제 존재하는, 404가 아닌 웹페이지를 전달하라.";
+
+        // tools - type
+        Map<String, Object> userLocation = new HashMap<>();
+        userLocation.put("type", "approximate");
+        userLocation.put("country", "KR");
+        userLocation.put("city", "Seoul");
+        userLocation.put("region", "Seoul");
+
+        // tools - user_location
+        Map<String, Object> tool = new HashMap<>();
+        tool.put("type", "web_search_preview");
+        tool.put("user_location", userLocation);
+
+        // tools
+        List<Map<String, Object>> tools = new ArrayList<>();
+        tools.add(tool);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("model", gptConfig.getModel());
+        body.put("tools", tools);
+        body.put("input", prompt);
+
+        ResponseEntity<String> response = restClient.post()
+                .uri("https://api.openai.com/v1/responses")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + gptConfig.getSecretKey())
+                .body(body)
+                .retrieve()
+                .toEntity(String.class);
+
+        JsonNode rootNode = objectMapper.readTree(response.getBody());
+        log.info("rootNode: {}", rootNode);
+        String output = rootNode.get("output")
+                .get(1)
+                .get("content")
+                .get(0)
+                .get("text")
+                .asText();
+
+        curriculum.changeRecommend(stage, output);
+        curriRepository.save(curriculum);
+
+        return output;
     }
 
 }
