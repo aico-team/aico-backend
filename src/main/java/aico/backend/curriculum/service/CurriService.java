@@ -109,6 +109,7 @@ public class CurriService {
                 .user(user)
                 .curriculumMap(curriculumMap)
                 .progress(0.0)
+                .recommendations(new HashMap<>())
                 .build();
 
         Curriculum savedCurri = curriRepository.save(curriculum);
@@ -181,10 +182,10 @@ public class CurriService {
         }
 
         String stage = recommendDto.getStage();
-        String value = curriculum.getRecommendations().get(stage);
+        Map<String, String> recommendations = curriculum.getRecommendations();
 
-        if (value != null) {
-            return value;
+        if (!recommendations.isEmpty()) {
+            return recommendations.get(stage);
         }
 
         String stageDescription = curriculum.getStepDescription(stage);
