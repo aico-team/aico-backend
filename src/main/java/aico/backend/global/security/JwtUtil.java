@@ -93,9 +93,10 @@ public class JwtUtil {
         setRefreshTokenCookie(response, refreshToken);
 
         // AccessToken을 JSON으로 응답
-        String json = String.format("{\"accessToken\": \"%s\",\n" +
-                "\"userId:\": \"%s\",\n" +
-                "\"nickname\": \"%s\"}", accessToken, id, nickname);
+        String json = String.format("""
+                {"accessToken": "%s",
+                "userId:": "%s",
+                "nickname": "%s"}""", accessToken, id, nickname);
         response.getWriter().write(json);
     }
 

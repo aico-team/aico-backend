@@ -2,6 +2,7 @@ package aico.backend.studytime.service;
 
 import aico.backend.studytime.domain.StudyTime;
 import aico.backend.studytime.repository.StudyTimeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -9,12 +10,9 @@ import java.time.DayOfWeek;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class StudyTimeService {
     private final StudyTimeRepository repo;
-
-    public StudyTimeService(StudyTimeRepository repo) {
-        this.repo = repo;
-    }
 
     public void saveStudyTime(Long userId, int totalSeconds) {
         LocalDate today = LocalDate.now();

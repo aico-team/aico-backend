@@ -184,7 +184,7 @@ public class CurriService {
         String stage = recommendDto.getStage();
         Map<String, String> recommendations = curriculum.getRecommendations();
 
-        if (!recommendations.isEmpty()) {
+        if (!recommendations.isEmpty() && recommendations.get(stage) != null) {
             return recommendations.get(stage);
         }
 

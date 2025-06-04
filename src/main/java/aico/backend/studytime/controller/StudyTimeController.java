@@ -2,6 +2,7 @@ package aico.backend.studytime.controller;
 
 import aico.backend.studytime.domain.StudyTime;
 import aico.backend.studytime.service.StudyTimeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/study-time")
-
+@RequiredArgsConstructor
 public class StudyTimeController {
     private final StudyTimeService service;
-
-    public StudyTimeController(StudyTimeService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public ResponseEntity<Void> saveTime(@RequestParam Long userId, @RequestParam int totalSeconds) {
