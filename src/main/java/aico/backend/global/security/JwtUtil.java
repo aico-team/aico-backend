@@ -95,7 +95,7 @@ public class JwtUtil {
         // AccessToken을 JSON으로 응답
         String json = String.format("""
                 {"accessToken": "%s",
-                "userId:": "%s",
+                "userId": %d,
                 "nickname": "%s"}""", accessToken, id, nickname);
         response.getWriter().write(json);
     }
