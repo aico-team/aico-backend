@@ -1,5 +1,6 @@
 package aico.backend.studytime.controller;
 
+import aico.backend.studytime.domain.ResponseDto;
 import aico.backend.studytime.domain.StudyTime;
 import aico.backend.studytime.service.StudyTimeService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class StudyTimeController {
     }
 
     @GetMapping("/daily")
-    public ResponseEntity<List<StudyTime>> getDaily(
+    public ResponseEntity<List<ResponseDto>> getDaily(
             @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
@@ -41,7 +42,7 @@ public class StudyTimeController {
     }
 
     @GetMapping("/weekly")
-    public ResponseEntity<List<StudyTime>> getWeekly(
+    public ResponseEntity<List<ResponseDto>> getWeekly(
             @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(service.getWeeklyTimes(userId, date));

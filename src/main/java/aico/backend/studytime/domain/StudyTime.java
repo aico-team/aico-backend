@@ -1,11 +1,13 @@
 package aico.backend.studytime.domain;
 
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "study_time")
-
+@Slf4j
 public class StudyTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +49,10 @@ public class StudyTime {
 
     public void setStudySeconds(int studySeconds) {
         this.studySeconds = studySeconds;
+    }
+
+    @Override
+    public String toString() {
+        return "🎈🎈StudyTime [id=" + id + ", userId=" + userId + ", date=" + date + ", studySeconds=" + studySeconds + "]";
     }
 }

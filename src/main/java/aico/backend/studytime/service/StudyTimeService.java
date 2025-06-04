@@ -1,8 +1,10 @@
 package aico.backend.studytime.service;
 
+import aico.backend.studytime.domain.ResponseDto;
 import aico.backend.studytime.domain.StudyTime;
 import aico.backend.studytime.repository.StudyTimeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudyTimeService {
     private final StudyTimeRepository repo;
 
@@ -48,13 +51,15 @@ public class StudyTimeService {
         return streak;
     }
 
-    public List<StudyTime> getDailyTimes(Long userId, LocalDate start, LocalDate end) {
-        return repo.findByUserIdAndDateBetween(userId, start, end);
+    public List<ResponseDto> getDailyTimes(Long userId, LocalDate start, LocalDate end) {
+        List<StudyTime> records = repo.findByUserIdAndDateBetween(userId, start, end);
+        return ResponseDto.from(records);
     }
 
-    public List<StudyTime> getWeeklyTimes(Long userId, LocalDate date) {
+    public List<ResponseDto> getWeeklyTimes(Long userId, LocalDate date) {
         LocalDate monday = date.with(DayOfWeek.MONDAY);
         LocalDate sunday = monday.plusDays(6);
-        return repo.findByUserIdAndDateBetween(userId, monday, sunday);
+        List<StudyTime> records = repo.findByUserIdAndDateBetween(userId, monday, sunday);
+        return ResponseDto.from(records);
     }
 }
