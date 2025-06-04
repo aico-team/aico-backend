@@ -30,8 +30,6 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         log.info("login success. email: {}", email);
         log.info("refreshToken: {}", refreshToken);
         log.info("accessToken: {}", accessToken);
-
-        response.getWriter().write("login success");
     }
 
     private String extractEmail(Authentication authentication) {
