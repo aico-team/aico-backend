@@ -21,17 +21,16 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         String email = extractEmail(authentication);
         String nickname = extractNickname(authentication);
+        Long id = extractUserId(authentication);
         String accessToken = jwtUtil.createAccessToken(email, nickname);
         String refreshToken = jwtUtil.createRefreshToken();
 
-        jwtUtil.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+        jwtUtil.sendAccessAndRefreshToken(response, accessToken, refreshToken, id, nickname);
         jwtUtil.updateUserRefreshToken(email, refreshToken);
 
         log.info("login success. email: {}", email);
         log.info("refreshToken: {}", refreshToken);
         log.info("accessToken: {}", accessToken);
-
-        response.getWriter().write("login success");
     }
 
     private String extractEmail(Authentication authentication) {
@@ -43,4 +42,13 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return userDetails.getNickname();
     }
+
+    private Long extractUserId(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userDetails.getId();
+    }
+
+
+
+
 }

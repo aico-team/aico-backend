@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
@@ -83,10 +84,20 @@ public class JwtUtil {
                 );
     }
 
-    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken,
+                                          Long id, String nickname) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        setAccessTokenHeader(response, accessToken);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         setRefreshTokenCookie(response, refreshToken);
+
+        // AccessToken을 JSON으로 응답
+        String json = String.format("""
+                {"accessToken": "%s",
+                "userId": %d,
+                "nickname": "%s"}""", accessToken, id, nickname);
+        response.getWriter().write(json);
     }
 
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {

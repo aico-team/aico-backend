@@ -8,6 +8,7 @@ import aico.backend.goal.dto.GoalUpdateRequestDto;
 import aico.backend.goal.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/goals")
 @RequiredArgsConstructor
+@Slf4j
 public class GoalController {
 
     private final GoalService goalService;
@@ -26,9 +28,10 @@ public class GoalController {
     @PostMapping
     public ResponseEntity<GoalResponseDto> createGoal(
             @Valid @RequestBody GoalCreateRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails//추후 인증된 사용자 ID 가져오도록 수정
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         GoalResponseDto createdGoal = goalService.createGoal(requestDto, userDetails);
+        log.info("😭 골이 골이 뭐예요 골이 뭐예요? 아이디{}, 데드라인{}", createdGoal.getCurrId(), createdGoal.getDeadline() );
         return ResponseEntity.status(HttpStatus.CREATED).body(createdGoal);
     }
 
@@ -60,7 +63,7 @@ public class GoalController {
         return ResponseEntity.ok(updatedGoal);
     }
 
-    @DeleteMapping("/{goldId}")
+    @DeleteMapping("/{goalId}")
     public ResponseEntity<Void> deleteGoal(
             @PathVariable Long goalId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -69,7 +72,7 @@ public class GoalController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{goalId}/toggle-complete")
+    @PatchMapping("/{goalId}/toggle-completed")
     public ResponseEntity<GoalResponseDto> toggleGoalCompletionStatus(
             @PathVariable Long goalId,
             @AuthenticationPrincipal UserDetailsImpl userDetails

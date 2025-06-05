@@ -2,6 +2,7 @@ package aico.backend.curriculum.controller;
 
 import aico.backend.curriculum.dto.CompletionDto;
 import aico.backend.curriculum.dto.CurriDto;
+import aico.backend.curriculum.dto.RecommendDto;
 import aico.backend.curriculum.service.CurriService;
 import aico.backend.global.security.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +58,13 @@ public class CurriController {
                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Double percent = curriService.getProgress(id, userDetails);
         return ResponseEntity.ok(percent);
+    }
+
+    @PostMapping("/recommend")
+    public ResponseEntity<String> getRecommendation(@RequestBody RecommendDto request,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) throws JsonProcessingException {
+        String response = curriService.recommendStudy(userDetails, request);
+        return ResponseEntity.ok(response);
     }
 
 

@@ -1,7 +1,9 @@
 package aico.backend.studytime.controller;
 
+import aico.backend.studytime.domain.ResponseDto;
 import aico.backend.studytime.domain.StudyTime;
 import aico.backend.studytime.service.StudyTimeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/study-time")
-
+@RequiredArgsConstructor
 public class StudyTimeController {
     private final StudyTimeService service;
-
-    public StudyTimeController(StudyTimeService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public ResponseEntity<Void> saveTime(@RequestParam Long userId, @RequestParam int totalSeconds) {
@@ -36,7 +34,7 @@ public class StudyTimeController {
     }
 
     @GetMapping("/daily")
-    public ResponseEntity<List<StudyTime>> getDaily(
+    public ResponseEntity<List<ResponseDto>> getDaily(
             @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
@@ -44,7 +42,7 @@ public class StudyTimeController {
     }
 
     @GetMapping("/weekly")
-    public ResponseEntity<List<StudyTime>> getWeekly(
+    public ResponseEntity<List<ResponseDto>> getWeekly(
             @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(service.getWeeklyTimes(userId, date));
