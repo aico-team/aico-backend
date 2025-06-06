@@ -1,6 +1,5 @@
 package aico.backend.awsS3;
 
-import aico.backend.chat.service.ChatService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
