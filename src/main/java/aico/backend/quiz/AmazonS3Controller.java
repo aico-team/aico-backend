@@ -14,7 +14,7 @@ public class AmazonS3Controller {
     private final AwsS3Service awsS3Service;
 
     @PostMapping
-    public ResponseEntity<String> uploadFile(MultipartFile multipartFile) throws JsonProcessingException {
+    public ResponseEntity<String> uploadFileAndQuiz(MultipartFile multipartFile, Long userId) throws JsonProcessingException {
         return ResponseEntity.ok((awsS3Service.uploadFileAndQuiz(multipartFile)));
     }
 
