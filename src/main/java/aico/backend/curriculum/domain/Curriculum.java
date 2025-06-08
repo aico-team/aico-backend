@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -35,11 +36,13 @@ public class Curriculum {
     private Map<String, String> recommendations;
 
     @Builder
-    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap, Double progress) {
+    public Curriculum(String topic, User user, Map<String, CurriculumStep> curriculumMap,
+                      Double progress, Map<String, String> recommendations) {
         this.topic = topic;
         this.user = user;
         this.curriculumMap = curriculumMap;
         this.progress = progress;
+        this.recommendations = recommendations;
     }
 
     public String getStepDescription(String step) {
