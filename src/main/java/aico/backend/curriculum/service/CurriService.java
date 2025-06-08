@@ -109,6 +109,7 @@ public class CurriService {
                 .user(user)
                 .curriculumMap(curriculumMap)
                 .progress(0.0)
+                .recommendations(new HashMap<>())
                 .build();
 
         Curriculum savedCurri = curriRepository.save(curriculum);
@@ -118,9 +119,6 @@ public class CurriService {
     public List<CurriDto.Response> getCurriList(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         List<Curriculum> curries = curriRepository.findByUser(user);
-        if(curries.isEmpty()) {
-            throw new CurriNotFoundException("해당 사용자의 커리큘럼이 없습니다.");
-        }
         List<CurriDto.Response> response = new ArrayList<>();
         for(Curriculum curri : curries) {
             response.add(new CurriDto.Response(curri.getId(), curri.getTopic(), curri.getCurriculumMap()));
@@ -184,10 +182,10 @@ public class CurriService {
         }
 
         String stage = recommendDto.getStage();
-        String value = curriculum.getRecommendations().get(stage);
+        Map<String, String> recommendations = curriculum.getRecommendations();
 
-        if (value != null) {
-            return value;
+        if (!recommendations.isEmpty() && recommendations.get(stage) != null) {
+            return recommendations.get(stage);
         }
 
         String stageDescription = curriculum.getStepDescription(stage);
