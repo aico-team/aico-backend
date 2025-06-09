@@ -84,7 +84,7 @@ public class AwsS3Service {
     public String quizByImage(String imageUrl) throws JsonProcessingException {
         String prompt = """
                이 파일을 바탕으로, 학습자가 잘 이해했는 지를 판별할 수 있는 퀴즈 3개를 만들어.
-               응답은 반드시 아래 JSON 형식의 문자열로만 답변해줘. 다른 설명은 포함하지 마.
+               응답은 반드시 아래 형식의 문자열로만 답변해줘. 절대 다른 설명은 포함하지 마.
                {"quiz1" : "퀴즈1 내용", "ans1" : "퀴즈1 답", ...}
                """;
 
