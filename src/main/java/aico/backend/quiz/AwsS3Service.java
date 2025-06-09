@@ -82,8 +82,6 @@ public class AwsS3Service {
     }
 
     public String quizByImage(String imageUrl) throws JsonProcessingException {
-        log.info("✅ 이미지 url: {}", imageUrl);
-
         String prompt = """
                이 파일을 바탕으로, 학습자가 잘 이해했는 지를 판별할 수 있는 퀴즈 3개를 만들어.
                응답은 반드시 아래 JSON 형식의 문자열로만 답변해줘. 다른 설명은 포함하지 마.
@@ -104,7 +102,11 @@ public class AwsS3Service {
                 .retrieve()
                 .toEntity(String.class);
 
-        return objectMapper.readTree(response.getBody())
+        String body = response.getBody();
+        int startIndex = body.indexOf("{"); // "{"의 위치 찾기
+        String result = body.substring(startIndex);
+
+        return objectMapper.readTree(result)
                 .get("output")
                 .get(0)
                 .get("content")
