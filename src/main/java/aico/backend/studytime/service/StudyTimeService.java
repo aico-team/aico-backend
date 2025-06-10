@@ -57,9 +57,8 @@ public class StudyTimeService {
     }
 
     public List<ResponseDto> getWeeklyTimes(Long userId, LocalDate date) {
-        LocalDate monday = date.with(DayOfWeek.MONDAY);
-        LocalDate sunday = monday.plusDays(6);
-        List<StudyTime> records = repo.findByUserIdAndDateBetween(userId, monday, sunday);
+        LocalDate start = date.minusDays(7);
+        List<StudyTime> records = repo.findByUserIdAndDateBetween(userId, start, date);
         return ResponseDto.from(records);
     }
 }
